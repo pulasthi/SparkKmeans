@@ -2,6 +2,7 @@ package org.pulasthi.sparkkmeans.computeonly
 
 import java.text.{SimpleDateFormat, DateFormat}
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 import com.google.common.base.{Stopwatch, Optional}
 import org.apache.commons.cli.{Options, CommandLine, HelpFormatter}
@@ -64,7 +65,6 @@ object Driver {
 
     val mainTimer: Stopwatch = Stopwatch.createStarted
 
-
     println("=== Program Started on " + dateFormat.format(new Date) + " ===")
     println("  Reading points ... ")
 
@@ -75,14 +75,17 @@ object Driver {
     println("Number of partitions : " + data.getNumPartitions);
     val parsedData = data.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
 
+    println("  Reading points ... ")
     val centers = sc.textFile(centersFile);
     val parsedCenters = centers.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
 
 
+    println("  Initializing KMeansModel with centroids ... ")
     // Setting initial centroids for K Means
     val kMeansModel = new KMeansModel(parsedCentersArray);
 
+    println(" Performing KMeans calculations ")
     val model = new KMeans()
       .setK(numCenters)
       .setInitialModel(kMeansModel)
@@ -90,6 +93,9 @@ object Driver {
       .run(parsedData)
 
     timer.stop()
+
+    mainTimer.stop()
+    println("=== Program terminated successfully on " + dateFormat.format(new Date) + " took " + (mainTimer.elapsed(TimeUnit.MILLISECONDS)) + " ms ===")
     // Evaluate clustering by computing Within Set Sum of Squared Errors
     val WSSSE2 = model.computeCost(parsedData)
     println("Within Set Sum of Squared Errors 2 = " + WSSSE2)
