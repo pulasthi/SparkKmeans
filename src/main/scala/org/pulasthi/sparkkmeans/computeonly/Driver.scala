@@ -65,8 +65,8 @@ object Driver {
     val mainTimer: Stopwatch = Stopwatch.createStarted
 
 
-    print("=== Program Started on " + dateFormat.format(new Date) + " ===")
-    print("  Reading points ... ")
+    println("=== Program Started on " + dateFormat.format(new Date) + " ===")
+    println("  Reading points ... ")
 
     val timer: Stopwatch = Stopwatch.createStarted
 
@@ -74,21 +74,29 @@ object Driver {
     val data = sc.textFile(pointsFile).repartition(parallelism);
     println("Number of partitions : " + data.getNumPartitions);
     val parsedData = data.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
-    println("Number of partitions : " + parsedData.getNumPartitions);
+
+    val centers = sc.textFile(centersFile);
+    val parsedCenters = centers.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
+    val parsedCentersArray = parsedCenters.collect()
 
 
-    // Cluster the data into two classes using KMeans
-    val numClusters = 2
-    val numIterations = 20
-    val clusters = KMeans.train(parsedData, numClusters, numIterations)
+    // Setting initial centroids for K Means
+    val kMeansModel = new KMeansModel(parsedCentersArray);
 
+    val model = new KMeans()
+      .setK(numCenters)
+      .setInitialModel(kMeansModel)
+      .setMaxIterations(maxIterations)
+      .run(parsedData)
+
+    timer.stop()
     // Evaluate clustering by computing Within Set Sum of Squared Errors
-    val WSSSE = clusters.computeCost(parsedData)
-    println("Within Set Sum of Squared Errors = " + WSSSE)
+    val WSSSE2 = model.computeCost(parsedData)
+    println("Within Set Sum of Squared Errors 2 = " + WSSSE2)
 
     // Save and load model
-    clusters.save(sc, "myModelPath")
-    val sameModel = KMeansModel.load(sc, "myModelPath")
+   // clusters.save(sc, "myModelPath")
+    //val sameModel = KMeansModel.load(sc, "myModelPath")
 
 
   }
