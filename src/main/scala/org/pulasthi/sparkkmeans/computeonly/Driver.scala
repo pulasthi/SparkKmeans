@@ -66,18 +66,18 @@ object Driver {
     val mainTimer: Stopwatch = Stopwatch.createStarted
 
     println("=== Program Started on " + dateFormat.format(new Date) + " ===")
-    println("  Reading points ... ")
+    println("  Reading Points ... ")
 
     val timer: Stopwatch = Stopwatch.createStarted
 
     val parallelism = numberOfThreads*numberOfWorkers;
     val data = sc.textFile(pointsFile).repartition(parallelism);
     println("Number of partitions : " + data.getNumPartitions);
-    val parsedData = data.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
+    val parsedData = data.map(s => Vectors.dense(s.split('\t').map(_.toDouble))).cache()
 
-    println("  Reading points ... ")
+    println("  Reading Centers ... ")
     val centers = sc.textFile(centersFile);
-    val parsedCenters = centers.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
+    val parsedCenters = centers.map(s => Vectors.dense(s.split('\t').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
 
 
@@ -89,6 +89,7 @@ object Driver {
     val model = new KMeans()
       .setK(numCenters)
       .setInitialModel(kMeansModel)
+      .setEpsilon(0.00001)
       .setMaxIterations(maxIterations)
       .run(parsedData)
 
