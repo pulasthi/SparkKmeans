@@ -1,5 +1,6 @@
 package org.pulasthi.sparkkmeans.computeonly
 
+import java.io.{File, PrintWriter}
 import java.text.{SimpleDateFormat, DateFormat}
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -51,6 +52,7 @@ object Driver {
 
     val numPoints: Int = cmd.getOptionValue("n").toInt
     val dimension: Int = cmd.getOptionValue("d").toInt
+    val epsilon: Double = cmd.getOptionValue("t").toDouble
     val numCenters: Int = cmd.getOptionValue("k").toInt
     val maxIterations: Int = cmd.getOptionValue("m").toInt
     val outputFile: String = if (cmd.hasOption("o")) cmd.getOptionValue("o") else ""
@@ -80,18 +82,26 @@ object Driver {
     val parsedCenters = centers.map(s => Vectors.dense(s.split('\t').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
 
-
     println("  Initializing KMeansModel with centroids ... ")
     // Setting initial centroids for K Means
     val kMeansModel = new KMeansModel(parsedCentersArray);
+    println("Centers " + kMeansModel.clusterCenters(0))
+    println("Centers " + kMeansModel.clusterCenters(1))
+    println("Centers " + kMeansModel.clusterCenters(2))
 
     println(" Performing KMeans calculations ")
+
     val model = new KMeans()
       .setK(numCenters)
       .setInitialModel(kMeansModel)
-      .setEpsilon(0.00001)
       .setMaxIterations(maxIterations)
-      .run(parsedData)
+      .setEpsilon(epsilon)
+      .run(parsedData);
+
+    println("Centers After run" + model.clusterCenters(0))
+    println("Centers After run" + model.clusterCenters(1))
+    println("Centers After run" + model.clusterCenters(2))
+
 
     timer.stop()
 
@@ -100,9 +110,17 @@ object Driver {
     // Evaluate clustering by computing Within Set Sum of Squared Errors
     val WSSSE2 = model.computeCost(parsedData)
     println("Within Set Sum of Squared Errors 2 = " + WSSSE2)
-
     // Save and load model
-   // clusters.save(sc, "myModelPath")
+//    model.save(sc, outputFile)
+//    var outputline: String = model.toPMML();
+    val pw = new PrintWriter(new File(outputFile.replace(".txt","_" + epsilon + ".txt")))
+
+    var predicted = model.clusterCenters;
+    predicted.map(center => pw.println(center(0) + "\t" + center(1)));
+
+//    pw.write(outputline)
+    pw.flush()
+    pw.close
     //val sameModel = KMeansModel.load(sc, "myModelPath")
 
 
