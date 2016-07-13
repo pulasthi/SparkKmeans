@@ -107,14 +107,8 @@ object Driver {
 
     mainTimer.stop()
     println("=== Program terminated successfully on " + dateFormat.format(new Date) + " took " + (mainTimer.elapsed(TimeUnit.MILLISECONDS)) + " ms ===")
-    // Evaluate clustering by computing Within Set Sum of Squared Errors
-    val WSSSE2 = model.computeCost(parsedData)
-    println("Within Set Sum of Squared Errors 2 = " + WSSSE2)
-    // Save and load model
-//    model.save(sc, outputFile)
-//    var outputline: String = model.toPMML();
-    val pw = new PrintWriter(new File(outputFile.replace(".txt","_" + epsilon + ".txt")))
 
+    val pw = new PrintWriter(new File(outputFile.replace(".txt","_" + epsilon + ".txt")))
     var predicted = model.clusterCenters;
     predicted.map(center => pw.println(center(0) + "\t" + center(1)));
 
