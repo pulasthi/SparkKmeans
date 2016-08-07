@@ -6,7 +6,7 @@ import org.apache.commons.cli._
 /**
   * Created by pulasthi on 7/3/16.
   */
-object Utils {
+object UtilsCustom {
 
   val PROGRAM_NAME: String = "K-Means"
   val ERR_PROGRAM_ARGUMENTS_PARSING_FAILED: String = "Argument parsing failed!"

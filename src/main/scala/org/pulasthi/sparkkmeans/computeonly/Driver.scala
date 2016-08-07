@@ -35,18 +35,18 @@ object Driver {
     programOptions.addOption("mmdir", true, "mmaps dir")
     programOptions.addOption("bind", true, "Bind threads [true/false]")
 
-    val parserResult: Optional[CommandLine] = Utils.parseCommandLineArguments(args, programOptions)
+    val parserResult: Optional[CommandLine] = UtilsCustom.parseCommandLineArguments(args, programOptions)
     if (!parserResult.isPresent) {
-      println(Utils.ERR_PROGRAM_ARGUMENTS_PARSING_FAILED)
-      new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions)
+      println(UtilsCustom.ERR_PROGRAM_ARGUMENTS_PARSING_FAILED)
+      new HelpFormatter().printHelp(UtilsCustom.PROGRAM_NAME, programOptions)
       return
     }
 
     val cmd: CommandLine = parserResult.get
     if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("t") &&
       cmd.hasOption("m") && cmd.hasOption("b") && cmd.hasOption("c") && cmd.hasOption("p") && cmd.hasOption("T"))) {
-      println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS)
-      new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions)
+      println(UtilsCustom.ERR_INVALID_PROGRAM_ARGUMENTS)
+      new HelpFormatter().printHelp(UtilsCustom.PROGRAM_NAME, programOptions)
       return
     }
 
@@ -75,20 +75,16 @@ object Driver {
     val parallelism = numberOfThreads*numberOfWorkers;
     val data = sc.textFile(pointsFile).repartition(parallelism);
     println("Number of partitions : " + data.getNumPartitions);
-    val parsedData = data.map(s => Vectors.dense(s.split('\t').map(_.toDouble))).cache()
+    val parsedData = data.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
 
     println("  Reading Centers ... ")
     val centers = sc.textFile(centersFile);
-    val parsedCenters = centers.map(s => Vectors.dense(s.split('\t').map(_.toDouble))).cache()
+    val parsedCenters = centers.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
 
     println("  Initializing KMeansModel with centroids ... ")
     // Setting initial centroids for K Means
     val kMeansModel = new KMeansModel(parsedCentersArray);
-    println("Centers " + kMeansModel.clusterCenters(0))
-    println("Centers " + kMeansModel.clusterCenters(1))
-    println("Centers " + kMeansModel.clusterCenters(2))
-
     println(" Performing KMeans calculations ")
 
     val model = new KMeans()
@@ -97,11 +93,6 @@ object Driver {
       .setMaxIterations(maxIterations)
       .setEpsilon(epsilon)
       .run(parsedData);
-
-    println("Centers After run" + model.clusterCenters(0))
-    println("Centers After run" + model.clusterCenters(1))
-    println("Centers After run" + model.clusterCenters(2))
-
 
     timer.stop()
 
@@ -112,11 +103,8 @@ object Driver {
     var predicted = model.clusterCenters;
     predicted.map(center => pw.println(center(0) + "\t" + center(1)));
 
-//    pw.write(outputline)
     pw.flush()
     pw.close
-    //val sameModel = KMeansModel.load(sc, "myModelPath")
-
 
   }
 }
