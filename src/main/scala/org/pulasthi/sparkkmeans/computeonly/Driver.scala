@@ -65,12 +65,13 @@ object Driver {
     val conf = new SparkConf().setAppName("sparkKMeans")
     val sc = new SparkContext(conf)
 
-    val mainTimer: Stopwatch = Stopwatch.createStarted
+
+    //val mainTimer: Stopwatch = Stopwatch.createStarted
 
     println("=== Program Started on " + dateFormat.format(new Date) + " ===")
     println("  Reading Points ... ")
 
-    val timer: Stopwatch = Stopwatch.createStarted
+    val timerstart = System.currentTimeMillis();
 
     val parallelism = numberOfThreads*numberOfWorkers;
     val data = sc.textFile(pointsFile).repartition(parallelism);
@@ -94,10 +95,9 @@ object Driver {
       .setEpsilon(epsilon)
       .run(parsedData);
 
-    timer.stop()
+    val timeend = System.currentTimeMillis();
 
-    mainTimer.stop()
-    println("=== Program terminated successfully on " + dateFormat.format(new Date) + " took " + (mainTimer.elapsed(TimeUnit.MILLISECONDS)) + " ms ===")
+    println("=== Program terminated successfully on " + dateFormat.format(new Date) + " took " + (timeend-timerstart) + " ms ===")
 
     val pw = new PrintWriter(new File(outputFile.replace(".txt","_" + epsilon + ".txt")))
     var predicted = model.clusterCenters;
