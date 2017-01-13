@@ -72,6 +72,7 @@ object Driver {
     println("  Reading Points ... ")
 
     val timerstart = System.currentTimeMillis();
+    val timerstartdata = System.currentTimeMillis();
 
     val parallelism = numberOfThreads*numberOfWorkers;
     val data = sc.textFile(pointsFile).repartition(parallelism);
@@ -82,6 +83,8 @@ object Driver {
     val centers = sc.textFile(centersFile);
     val parsedCenters = centers.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
+    val timeenddata = System.currentTimeMillis();
+    println("===Data read successfully on " + dateFormat.format(new Date) + " took " + (timeenddata-timerstartdata) + " ms ===")
 
     println("  Initializing KMeansModel with centroids ... ")
     // Setting initial centroids for K Means
