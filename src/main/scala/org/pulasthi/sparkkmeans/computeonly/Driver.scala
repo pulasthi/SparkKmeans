@@ -3,9 +3,8 @@ package org.pulasthi.sparkkmeans.computeonly
 import java.io.{File, PrintWriter}
 import java.text.{SimpleDateFormat, DateFormat}
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
-import com.google.common.base.{Stopwatch, Optional}
+import com.google.common.base.{Optional}
 import org.apache.commons.cli.{Options, CommandLine, HelpFormatter}
 import org.apache.spark.mllib.clustering.{KMeansModel, KMeans}
 import org.apache.spark.mllib.linalg.Vectors
@@ -63,6 +62,7 @@ object Driver {
 
 
     val conf = new SparkConf().setAppName("sparkKMeans")
+    conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
     val sc = new SparkContext(conf)
 
 
