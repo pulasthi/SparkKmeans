@@ -29,12 +29,32 @@ object Reduce {
     val sc = new SparkContext(conf)
     val tempArray = 0 to (parallelism-1) toArray;
     val distData = sc.parallelize(tempArray,parallelism).map(_ => {
+      val currntTime = System.currentTimeMillis();
+      currntTime;
+    }).reduce((x,y) => x+y);
+    val timeafterReduce = System.currentTimeMillis();
+    val averageTime = distData/parallelism;
+
+    println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
+
+    val redbyKey = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
-      localMachine.getHostName()
+      (0,(localMachine.getHostName(),System.currentTimeMillis()))
+    }).reduceByKey((x,y) => {
+      var result = ("",-1l);
+      val localMachine = java.net.InetAddress.getLocalHost().getHostName;
+      if(localMachine == x._1){
+        result = ("", (System.currentTimeMillis() - x._2))
+      }
+      if(localMachine == y._1){
+        result = ("", (System.currentTimeMillis() - y._2))
+      }
+      result
     }).collect();
 
-    for ( x <- distData ) {
-      println( " " + x )
+
+    for ( x <- redbyKey ) {
+      println( " " + x._2 );
     }
     val localMachine = java.net.InetAddress.getLocalHost();
 
