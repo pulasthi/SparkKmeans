@@ -38,41 +38,43 @@ object Reduce {
 //    val averageTime = distData/parallelism;
 
    // println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
-    
-    val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
-      val localMachine = java.net.InetAddress.getLocalHost();
-      val data = new Data();
-      val tempArray = 0 to (15999) toArray;
-      data.dataArray = tempArray ;
-      data.hostname = localMachine.getHostName();
-      data.time = System.currentTimeMillis();
-      (0,data)
-    }).reduceByKey((x,y) => {
-      val localMachine = java.net.InetAddress.getLocalHost().getHostName();
+    for( a <- 1 to 2){
+      val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
+        val localMachine = java.net.InetAddress.getLocalHost();
+        val data = new Data();
+        val tempArray = 0 to (15999) toArray;
+        data.dataArray = tempArray ;
+        data.hostname = localMachine.getHostName();
+        data.time = System.currentTimeMillis();
+        (0,data)
+      }).reduceByKey((x,y) => {
+        val localMachine = java.net.InetAddress.getLocalHost().getHostName();
 
-      if(x.hostname == "found"){
-        x.endtime = System.currentTimeMillis();
-      }else{
-
-        if(x.hostname == localMachine){
-          x.hostname = "found";
+        if(x.hostname == "found"){
           x.endtime = System.currentTimeMillis();
+        }else{
 
-        }
-        if(y.hostname == localMachine){
-          x.hostname = "found";
-          x.time = y.time;
-          x.dataArray = y.dataArray;
-          x.endtime = System.currentTimeMillis();
+          if(x.hostname == localMachine){
+            x.hostname = "found";
+            x.endtime = System.currentTimeMillis();
 
+          }
+          if(y.hostname == localMachine){
+            x.hostname = "found";
+            x.time = y.time;
+            x.dataArray = y.dataArray;
+            x.endtime = System.currentTimeMillis();
+
+          }
         }
+        x
+      }).collect();
+
+      for ( x <- hosts ) {
+        println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
       }
-      x
-    }).collect();
-
-    for ( x <- hosts ) {
-      println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
     }
+
 
   }
 
