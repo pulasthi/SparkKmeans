@@ -56,8 +56,9 @@ object Reduce {
       val localMachine = java.net.InetAddress.getLocalHost();
       (0,localMachine.getHostName())
     }).reduceByKey((x,y) => {
+      val localMachine = java.net.InetAddress.getLocalHost().getHostName();
 
-      x+ "::" + y;
+      x+ "::::" + "( " + localMachine + "||" + y + ")";
     }).collect();
 
     for ( x <- hosts ) {
