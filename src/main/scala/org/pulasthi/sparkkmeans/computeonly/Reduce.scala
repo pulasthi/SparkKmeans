@@ -41,8 +41,8 @@ object Reduce {
       val localMachine = java.net.InetAddress.getLocalHost();
       (0,(localMachine.getHostName(),System.currentTimeMillis()))
     }).reduceByKey((x,y) => {
-      var result = ("",-1l);
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
+      var result = (localMachine,-1l);
       if(localMachine == x._1){
         result = ("", (System.currentTimeMillis() - x._2))
       }
