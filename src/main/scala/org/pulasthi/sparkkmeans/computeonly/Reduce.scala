@@ -38,9 +38,51 @@ object Reduce {
 //    val averageTime = distData/parallelism;
 
    // println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
-    var sum = 0l;
+//    var sum = 0l;
+//    for( a <- 1 to 4){
+//      val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
+//        val localMachine = java.net.InetAddress.getLocalHost();
+//        val data = new Data();
+//        val tempArray = 0 to (15999) toArray;
+//        data.dataArray = tempArray ;
+//        data.hostname = localMachine.getHostName();
+//        data.time = System.currentTimeMillis();
+//        (0,data)
+//      }).reduceByKey((x,y) => {
+//        val localMachine = java.net.InetAddress.getLocalHost().getHostName();
+//
+//        if(x.hostname == "found"){
+//          x.endtime = System.currentTimeMillis();
+//        }else{
+//
+//          if(x.hostname == localMachine){
+//            x.hostname = "found";
+//            x.endtime = System.currentTimeMillis();
+//
+//          }
+//          if(y.hostname == localMachine){
+//            x.hostname = "found";
+//            x.time = y.time;
+//            x.dataArray = y.dataArray;
+//            x.endtime = System.currentTimeMillis();
+//
+//          }
+//        }
+//        x
+//      }).collect();
+//
+//      for ( x <- hosts ) {
+//        sum  += (x._2.endtime - x._2.time);
+//        println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
+//      }
+//    }
+//
+//    println("Averate ================ " + sum/4);
+
+
+    var sum2 = 0l;
     for( a <- 1 to 4){
-      val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
+      val hosts2 = sc.parallelize(tempArray,parallelism).map(_ => {
         val localMachine = java.net.InetAddress.getLocalHost();
         val data = new Data();
         val tempArray = 0 to (15999) toArray;
@@ -48,37 +90,24 @@ object Reduce {
         data.hostname = localMachine.getHostName();
         data.time = System.currentTimeMillis();
         (0,data)
-      }).reduceByKey((x,y) => {
+      }).groupByKey().map(x => {
         val localMachine = java.net.InetAddress.getLocalHost().getHostName();
-
-        if(x.hostname == "found"){
-          x.endtime = System.currentTimeMillis();
-        }else{
-
-          if(x.hostname == localMachine){
-            x.hostname = "found";
-            x.endtime = System.currentTimeMillis();
-
-          }
-          if(y.hostname == localMachine){
-            x.hostname = "found";
-            x.time = y.time;
-            x.dataArray = y.dataArray;
-            x.endtime = System.currentTimeMillis();
-
+        var time = 0l;
+        for(cur <- x._2){
+          if(localMachine == cur.hostname){
+            time = System.currentTimeMillis() - cur.time;
           }
         }
-        x
-      }).collect();
+        time
+      })
 
-      for ( x <- hosts ) {
-        sum  += (x._2.endtime - x._2.time);
-        println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
+      for ( x <- hosts2 ) {
+        sum2  += x;
+        println( "============= Group By Key +++++++++ :" + x );
       }
     }
 
-    println("Averate ================ " + sum/4);
-
+    println("Averate ================ " + sum2/4);
 
   }
 
