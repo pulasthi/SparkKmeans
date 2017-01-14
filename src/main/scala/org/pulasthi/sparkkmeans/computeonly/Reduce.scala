@@ -37,32 +37,12 @@ object Reduce {
     val timeafterReduce = System.currentTimeMillis();
     val averageTime = distData/parallelism;
 
-    val data = new Data();
-    data.dataArray = tempArray ;
-    data.hostname = "sd";
-    data.time = System.currentTimeMillis();
-
     println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
-
-//    val redbyKey = sc.parallelize(tempArray,parallelism).map(_ => {
-//      val localMachine = java.net.InetAddress.getLocalHost();
-//      (0,(localMachine.getHostName(),System.currentTimeMillis()))
-//    }).reduceByKey((x,y) => {
-//      val localMachine = java.net.InetAddress.getLocalHost().getHostName();
-//      var result = ("-1",-1l);
-//      if(localMachine == x._1){
-//        result = ("-1", (System.currentTimeMillis() - x._2))
-//      }
-//      if(localMachine == y._1){
-//        result = ("-1", (System.currentTimeMillis() - y._2))
-//      }
-//      result
-//    }).collect();
 
     val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
       val data = new Data();
-      val tempArray = 0 to (4000) toArray;
+      val tempArray = 0 to (15999) toArray;
       data.dataArray = tempArray ;
       data.hostname = localMachine.getHostName();
       data.time = System.currentTimeMillis();
@@ -93,9 +73,6 @@ object Reduce {
     for ( x <- hosts ) {
       println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
     }
-    val localMachine = java.net.InetAddress.getLocalHost();
-
-    println( " Driver" + localMachine.getHostName() )
 
   }
 
