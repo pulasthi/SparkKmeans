@@ -99,7 +99,7 @@ object Reduce {
           }
         }
         time
-      })
+      }).collect()
 
       for ( x <- hosts2 ) {
         sum2  += x;
