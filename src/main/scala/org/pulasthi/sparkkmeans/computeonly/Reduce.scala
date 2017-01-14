@@ -44,10 +44,10 @@ object Reduce {
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
       var result = (localMachine,-1l);
       if(localMachine == x._1){
-        result = ("", (System.currentTimeMillis() - x._2))
+        result = (localMachine, (System.currentTimeMillis() - x._2))
       }
       if(localMachine == y._1){
-        result = ("", (System.currentTimeMillis() - y._2))
+        result = (localMachine, (System.currentTimeMillis() - y._2))
       }
       result
     }).collect();
