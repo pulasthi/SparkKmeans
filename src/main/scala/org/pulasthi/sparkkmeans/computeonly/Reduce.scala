@@ -42,12 +42,12 @@ object Reduce {
       (0,(localMachine.getHostName(),System.currentTimeMillis()))
     }).reduceByKey((x,y) => {
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
-      var result = (localMachine,-1l);
+      var result = ("-1",-1l);
       if(localMachine == x._1){
-        result = (localMachine, (System.currentTimeMillis() - x._2))
+        result = ("-1", (System.currentTimeMillis() - x._2))
       }
       if(localMachine == y._1){
-        result = (localMachine, (System.currentTimeMillis() - y._2))
+        result = ("-1", (System.currentTimeMillis() - y._2))
       }
       result
     }).collect();
