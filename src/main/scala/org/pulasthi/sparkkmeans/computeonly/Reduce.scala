@@ -38,7 +38,7 @@ object Reduce {
 //    val averageTime = distData/parallelism;
 
    // println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
-    var sum = 0;
+    var sum = 0l;
     for( a <- 1 to 4){
       val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
         val localMachine = java.net.InetAddress.getLocalHost();
@@ -72,7 +72,7 @@ object Reduce {
       }).collect();
 
       for ( x <- hosts ) {
-        sum += (x._2.endtime - x._2.time);
+        sum  += (x._2.endtime - x._2.time);
         println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
       }
     }
