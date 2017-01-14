@@ -54,11 +54,11 @@ object Reduce {
 
     val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
-      (0,("zzz",111l))
+      (0,new Tuple2("zzz",111l))
     }).reduceByKey((x,y) => {
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
 
-      (x._1+ "::::" + "( " + localMachine + "||" + y._1 + ")", -1l)
+      new Tuple2(x._1+ "::::" + "( " + localMachine + "||" + y._1 + ")", -1l)
     }).collect();
 
     for ( x <- hosts ) {
