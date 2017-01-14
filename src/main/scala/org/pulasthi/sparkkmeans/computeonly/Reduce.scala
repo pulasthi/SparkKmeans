@@ -30,15 +30,15 @@ object Reduce {
 
     val sc = new SparkContext(conf)
     val tempArray = 0 to (parallelism-1) toArray;
-    val distData = sc.parallelize(tempArray,parallelism).map(_ => {
-      val currntTime = System.currentTimeMillis();
-      currntTime;
-    }).reduce((x,y) => x+y);
-    val timeafterReduce = System.currentTimeMillis();
-    val averageTime = distData/parallelism;
+//    val distData = sc.parallelize(tempArray,parallelism).map(_ => {
+//      val currntTime = System.currentTimeMillis();
+//      currntTime;
+//    }).reduce((x,y) => x+y);
+//    val timeafterReduce = System.currentTimeMillis();
+//    val averageTime = distData/parallelism;
 
-    println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
-
+   // println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
+    
     val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
       val data = new Data();
