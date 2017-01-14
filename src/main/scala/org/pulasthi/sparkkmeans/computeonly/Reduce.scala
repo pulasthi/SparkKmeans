@@ -52,7 +52,17 @@ object Reduce {
       result
     }).collect();
 
+    val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
+      val localMachine = java.net.InetAddress.getLocalHost();
+      (0,localMachine.getHostName())
+    }).reduceByKey((x,y) => {
 
+      x+ "::" + y;
+    }).collect();
+
+    for ( x <- hosts ) {
+      println( "============= Reduce By Key +++++++++ :" + x );
+    }
     for ( x <- redbyKey ) {
       println( "============= Reduce By Key +++++++++ :" + x._2 );
     }
