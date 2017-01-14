@@ -66,6 +66,7 @@ object Driver {
     val sc = new SparkContext(conf)
 
 
+
     //val mainTimer: Stopwatch = Stopwatch.createStarted
 
     println("=== Program Started on " + dateFormat.format(new Date) + " ===")
@@ -84,6 +85,8 @@ object Driver {
     val parsedCenters = centers.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
     val timeenddata = System.currentTimeMillis();
+    println("Centers count " + parsedCentersArray.length)
+
     println("===Data read successfully on " + dateFormat.format(new Date) + " took " + (timeenddata-timerstartdata) + " ms ===")
 
     println("  Initializing KMeansModel with centroids ... ")
