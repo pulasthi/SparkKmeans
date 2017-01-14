@@ -54,7 +54,7 @@ object Reduce {
 
     val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
-      (0,(localMachine.getHostName(),System.currentTimeMillis()))
+      (0,("zzz",System.currentTimeMillis()))
     }).reduceByKey((x,y) => {
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
 
