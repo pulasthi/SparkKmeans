@@ -26,6 +26,8 @@ object Reduce {
 
     val conf = new SparkConf().setAppName("SimpleReduce")
     conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+    conf.registerKryoClasses(Array(classOf[Data]))
+
     val sc = new SparkContext(conf)
     val tempArray = 0 to (parallelism-1) toArray;
     val distData = sc.parallelize(tempArray,parallelism).map(_ => {
@@ -35,40 +37,61 @@ object Reduce {
     val timeafterReduce = System.currentTimeMillis();
     val averageTime = distData/parallelism;
 
+    val data = new Data();
+    data.dataArray = tempArray ;
+    data.hostname = "sd";
+    data.time = System.currentTimeMillis();
+
     println("============= Reduce Time to Master +++++++++ :" + (timeafterReduce - averageTime));
 
-    val redbyKey = sc.parallelize(tempArray,parallelism).map(_ => {
-      val localMachine = java.net.InetAddress.getLocalHost();
-      (0,(localMachine.getHostName(),System.currentTimeMillis()))
-    }).reduceByKey((x,y) => {
-      val localMachine = java.net.InetAddress.getLocalHost().getHostName();
-      var result = ("-1",-1l);
-      if(localMachine == x._1){
-        result = ("-1", (System.currentTimeMillis() - x._2))
-      }
-      if(localMachine == y._1){
-        result = ("-1", (System.currentTimeMillis() - y._2))
-      }
-      result
-    }).collect();
+//    val redbyKey = sc.parallelize(tempArray,parallelism).map(_ => {
+//      val localMachine = java.net.InetAddress.getLocalHost();
+//      (0,(localMachine.getHostName(),System.currentTimeMillis()))
+//    }).reduceByKey((x,y) => {
+//      val localMachine = java.net.InetAddress.getLocalHost().getHostName();
+//      var result = ("-1",-1l);
+//      if(localMachine == x._1){
+//        result = ("-1", (System.currentTimeMillis() - x._2))
+//      }
+//      if(localMachine == y._1){
+//        result = ("-1", (System.currentTimeMillis() - y._2))
+//      }
+//      result
+//    }).collect();
 
     val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
-      (0,localMachine + ":" + System.currentTimeMillis())
+      val data = new Data();
+      val tempArray = 0 to (4000) toArray;
+      data.dataArray = tempArray ;
+      data.hostname = localMachine.getHostName();
+      data.time = System.currentTimeMillis();
+      (0,data)
     }).reduceByKey((x,y) => {
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
-      var split1 = x.split(":");
-      var split2 = y.split(":");
-      if(split1.length > 2){
-        return x + "::::" + "( " + localMachine + "||" + split2(0) + ")"
-      }else{
-        split1(0) + "::::" + "( " + localMachine + "||" + split2(0) + ")"
-      }
 
+      if(x.hostname == "found"){
+        x.endtime = System.currentTimeMillis();
+      }else{
+
+        if(x.hostname == localMachine){
+          x.hostname = "found";
+          x.endtime = System.currentTimeMillis();
+
+        }
+        if(y.hostname == localMachine){
+          x.hostname = "found";
+          x.time = y.time;
+          x.dataArray = y.dataArray;
+          x.endtime = System.currentTimeMillis();
+
+        }
+      }
+      x
     }).collect();
 
     for ( x <- hosts ) {
-      println( "============= Reduce By Key +++++++++ :" + x._1 );
+      println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
     }
     for ( x <- redbyKey ) {
       println( "============= Reduce By Key +++++++++ :" + x._2 );
