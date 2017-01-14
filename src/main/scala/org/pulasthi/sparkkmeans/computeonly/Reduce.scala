@@ -93,9 +93,6 @@ object Reduce {
     for ( x <- hosts ) {
       println( "============= Reduce By Key +++++++++ :" + (x._2.endtime - x._2.time) );
     }
-    for ( x <- redbyKey ) {
-      println( "============= Reduce By Key +++++++++ :" + x._2 );
-    }
     val localMachine = java.net.InetAddress.getLocalHost();
 
     println( " Driver" + localMachine.getHostName() )
