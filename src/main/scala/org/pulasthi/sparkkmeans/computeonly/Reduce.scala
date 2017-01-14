@@ -54,15 +54,15 @@ object Reduce {
 
     val hosts = sc.parallelize(tempArray,parallelism).map(_ => {
       val localMachine = java.net.InetAddress.getLocalHost();
-      (0,localMachine.getHostName())
+      (0,(localMachine.getHostName(),System.currentTimeMillis()))
     }).reduceByKey((x,y) => {
       val localMachine = java.net.InetAddress.getLocalHost().getHostName();
 
-      x+ "::::" + "( " + localMachine + "||" + y + ")";
+      (x._1+ "::::" + "( " + localMachine + "||" + y._1 + ")", -1l)
     }).collect();
 
     for ( x <- hosts ) {
-      println( "============= Reduce By Key +++++++++ :" + x );
+      println( "============= Reduce By Key +++++++++ :" + x._1 );
     }
     for ( x <- redbyKey ) {
       println( "============= Reduce By Key +++++++++ :" + x._2 );
