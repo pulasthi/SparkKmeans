@@ -78,11 +78,11 @@ object Driver {
     val parallelism = numberOfThreads*numberOfWorkers;
     val data = sc.textFile(pointsFile).repartition(parallelism);
     println("Number of partitions : " + data.getNumPartitions);
-    val parsedData = data.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
+    val parsedData = data.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
 
     println("  Reading Centers ... ")
     val centers = sc.textFile(centersFile);
-    val parsedCenters = centers.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
+    val parsedCenters = centers.map(s => Vectors.dense(s.split(',').map(_.toDouble))).cache()
     val parsedCentersArray = parsedCenters.collect()
     val timeenddata = System.currentTimeMillis();
     println("Centers count " + parsedCentersArray.length)

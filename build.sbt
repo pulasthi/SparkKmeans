@@ -2,7 +2,7 @@ import _root_.sbtassembly.AssemblyPlugin.autoImport._
 
 name := "SparkKMeans"
 
-version := "1.0"
+version := "1.1"
 
 scalaVersion := "2.11.8"
 
@@ -13,8 +13,8 @@ resolvers +=
   "local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.0.0" % "provided",
-  "org.apache.spark" %% "spark-mllib" % "2.0.0" % "provided"
+  "org.apache.spark" %% "spark-core" % "2.3.0" % "provided",
+  "org.apache.spark" %% "spark-mllib" % "2.3.0" % "provided"
 )
 
 libraryDependencies += "edu.indiana.soic.spidal" % "common" % "1.0"
