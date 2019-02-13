@@ -13,8 +13,8 @@ resolvers +=
   "local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.0.0" % "provided",
-  "org.apache.spark" %% "spark-mllib" % "2.0.0" % "provided"
+  "org.apache.spark" %% "spark-core" % "2.4.0" % "provided",
+  "org.apache.spark" %% "spark-mllib" % "2.4.0" % "provided"
 )
 
 libraryDependencies += "edu.indiana.soic.spidal" % "common" % "1.0"
