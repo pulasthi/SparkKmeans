@@ -44,6 +44,7 @@ object DataFlowTest {
 
     println("=== Program Started on " + dateFormat.format(new Date) + " ===")
 
+    val data: Array[Double] = Array.ofDim(numPoints);
 
     val startTime = System.currentTimeMillis();
     for ( k <- 0 until maxIterations ) {
@@ -51,7 +52,6 @@ object DataFlowTest {
       val runRDD = sc.parallelize(1 to parallism, parallism);
       val mappedRDD = runRDD.map { index => {
         //init data points
-        val data: Array[Double] = Array.ofDim(numPoints);
         for (i <- 0 until numPoints) {
           data(i) = index*k;
         }
@@ -62,7 +62,7 @@ object DataFlowTest {
       val result = mappedRDD.reduce(reduceFun)
       sc.broadcast(result)
     }
-    println("Total Time for 1" + maxIterations + " : " + (System.currentTimeMillis() - startTime));
+    println("Total Time for 1 " + maxIterations + " : " + (System.currentTimeMillis() - startTime));
   }
 
   def reduceFun(a: Array[Double], b: Array[Double]): Array[Double] = {
